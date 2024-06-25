@@ -1,0 +1,3 @@
+For both products, a guarantee of 100% seems impossible because the guarantee is in terms of the single_premium, but the maximum amount you can put in the safe traditional part is single_premium - initial costs. Depending on the guaranteed interest rate and the regular fixed charges this amount might not be enough to achieve the guarantee. 
+
+But 100% is not a general upper bound. Given a high enough guaranteed interest rate you could theoretically get any guarantee. In the high_guarantee_examples there is a guarantee of 500% which works with a guaranteed interest rate of 10%.

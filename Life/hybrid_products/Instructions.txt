@@ -1,0 +1,16 @@
+This is a tool to batch-process hybrid product contracts using python. Input .txt file with contract parameters, output .txt file with entire contract history. This version is extremely efficient with code and also neat in general since this .txt input to .txt output batch
+processing is common at the core of calculation kernels used in production in insurance companies. To think further, you could e.p. automatically generate and calculate input files from database information. Also there are unlimited possibilities of how to further use the .txt output files for analysis.
+
+Prerequisites: Python installation. (there are already output files and plots generated in the respective folders if no python)
+
+1. Put arbitrary number of .txt files with contract information in input folder (check input_template, for fund either put in percentage or fund name)
+2. Execute run_dynamic_hybrid.cmd or run_static_hybrid.cmd
+3. See results in output folder
+
+
+
+The plots in the /plots folder were generated automatically before but i cut that out of the process now to make it cleaner, the function is still in /code/utils.py. 
+
+For now i have 2 .cmd files so i can instantly calculate the same batch of contracts as both static/dynamic without modifying the input files. This might be changed so there is only one starting point and the hybrid type can be a parameter in the input file.
+
+The next development would be monthly premiums.  

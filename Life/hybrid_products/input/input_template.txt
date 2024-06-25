@@ -1,0 +1,15 @@
+alpha=0.025
+beta=0.05
+gamma=0.001
+regular_charges=3
+premium=100000
+guaranteed_benefit=0.8
+guaranteed_interest=0.0025
+real_interest=0.03
+fund=sp500
+age=37
+life_table=2008T_M
+maturity=240
+worst_case=0.2
+start_date=01/01/1995
+contract_type=pure_fund_single_premium
