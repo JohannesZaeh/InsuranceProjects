@@ -18,7 +18,11 @@ base_input = read_input(input_directory + "/fund_timelapse_input.txt")
 
 locals().update(base_input)
 
-path_fund = directory + "/resources/" + fund + ".txt"
+if isinstance(fund, str):
+    fund_constant = False
+else:
+    constant_increment = fund
+    fund_constant = True
 
 start_years = [str(1972 + i) for i in range(0,int(2024-1972-maturity/12))]
 months = ["01","02","03","04","05","06","07","08","09","10","11","12"]
@@ -36,7 +40,13 @@ for i,year in enumerate(start_years):
 
         start_date = month + "/01/" + year
         start_dates.append(int(year) + m/12)
-        fund = load_fund(path_fund, start_date, int(maturity))
+
+        # check if it should load a specific fund from /resources, otherwise turn constant fund into list.
+        if fund_constant == False:
+            path_fund = directory + "/resources/" + fund + ".txt"
+            fund = load_fund(path_fund, start_date, int(maturity))
+        else:
+            fund = int(maturity) * [(1 + constant_increment) ** (1 / 12)]
 
         match contract_type:
             case "pure_fund_single_premium":
