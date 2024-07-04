@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import math
 import numpy as np
 
-#SET WORKING DIRECTORY, the directory which contains the .mat file
-working_dir = "INSERT WORKING DIRECTORY"
+from utils import load_data
+
+
 
 
 # Load the qxt from a .mat file
@@ -63,27 +64,6 @@ print("Test if the vecors sum up correctly:")
 print(f"Sum Kappa: {np.sum(kappa)}")
 print(f"Sum Beta: {np.sum(beta)}")
 
-#Plot the vectors
-ages = np.linspace(50,90,41)
-years = np.linspace(1980,2006,27)
-
-plt.plot(ages,ax)
-plt.title("Alpha")
-plt.xlabel('Age')
-plt.ylabel('Alpha')
-plt.show()
-
-plt.plot(years,kappa)
-plt.title("Kappa")
-plt.xlabel('Year')
-plt.ylabel('Kappa')
-plt.show()
-
-plt.plot(ages,beta)
-plt.title("Beta")
-plt.xlabel('Age')
-plt.ylabel('Beta')
-plt.show()
 
 '''
 (c)
@@ -146,5 +126,3 @@ print(f"Prediction Interval for μ for age 80 in 2050: {prediction_interval}")
 #Prediction interval for survival probabilities
 p_prediction_interval = [math.exp(-prediction_interval[1]),math.exp(-prediction_interval[0])]
 print(f"Prediction Interval for p for age 80 in 2050: {p_prediction_interval}")
-
-
