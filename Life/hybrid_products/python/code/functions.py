@@ -80,8 +80,8 @@ Calculate complete evolution of a hyrid product given the input parameters.
 '''
 
 
-def run_hybrid(single_premium, guaranteed_benefit, worst_case, guaranteed_interest, real_interest, fund,
-               regular_charges, alpha, beta, maturity, type):
+def dynamic_hybrid_single_premium(single_premium, guaranteed_benefit, worst_case, guaranteed_interest, real_interest, fund,
+               regular_charges, alpha, beta, maturity):
     T = int(maturity)
     guaranteed_interest_monthly = (1 + guaranteed_interest) ** (1 / 12)
     real_interest_monthly = (1 + real_interest) ** (1 / 12)
@@ -94,22 +94,13 @@ def run_hybrid(single_premium, guaranteed_benefit, worst_case, guaranteed_intere
 
     guaranteed_benefit_nominal = guaranteed_benefit * single_premium
 
-    if type == "static_hybrid":
-        # calculate pv for T+1 because the calculate_pv method substracts one step as is needed usually for the dynamic part
-        pv = calculate_pv(guaranteed_benefit_nominal, guaranteed_interest_monthly, regular_charges, T + 1)
-        Account["traditional_part"].append(pv)
-        Account["fund_part"].append(savings_premium - pv)
+    split = calculate_split(savings_premium, guaranteed_benefit_nominal, T, worst_case,
+                            guaranteed_interest_monthly,
+                            regular_charges)
 
-    elif type == "dynamic_hybrid":
-        split = calculate_split(savings_premium, guaranteed_benefit_nominal, T, worst_case,
-                                guaranteed_interest_monthly,
-                                regular_charges)
+    Account["traditional_part"].append(split[0])
+    Account["fund_part"].append(split[1])
 
-        Account["traditional_part"].append(split[0])
-        Account["fund_part"].append(split[1])
-    else:
-        print("invalid product type")
-        sys.exit()
 
     for t in range(1, T + 1):
 
@@ -117,11 +108,10 @@ def run_hybrid(single_premium, guaranteed_benefit, worst_case, guaranteed_intere
         fund_part_new = Account["fund_part"][t - 1] * fund[t - 1]
         new_total = traditional_part_new + fund_part_new
 
-        if type == "dynamic_hybrid":
-            [traditional_part_new, fund_part_new] = calculate_split(new_total, guaranteed_benefit_nominal, T - t,
-                                                                    worst_case,
-                                                                    guaranteed_interest_monthly,
-                                                                    regular_charges)
+        [traditional_part_new, fund_part_new] = calculate_split(new_total, guaranteed_benefit_nominal, T - t,
+                                                                worst_case,
+                                                                guaranteed_interest_monthly,
+                                                                regular_charges)
 
         Account["t"].append(t)
         Account["traditional_part"].append(traditional_part_new)
@@ -134,6 +124,45 @@ def run_hybrid(single_premium, guaranteed_benefit, worst_case, guaranteed_intere
     Account["irr"] = irr
 
     return Account
+
+
+def static_hybrid_single_premium(single_premium, guaranteed_benefit, worst_case, guaranteed_interest, real_interest, fund, regular_charges, alpha, beta, maturity):
+    
+    T = int(maturity)
+    guaranteed_interest_monthly = (1 + guaranteed_interest) ** (1 / 12)
+    real_interest_monthly = (1 + real_interest) ** (1 / 12)
+
+    Account = {"t": [0], "traditional_part": [],
+               "fund_part": [], "total": []}
+
+    savings_premium = (1 - (alpha + beta)) * single_premium
+    Account["total"].append(savings_premium)
+
+    guaranteed_benefit_nominal = guaranteed_benefit * single_premium
+
+    # calculate pv for T+1 because the calculate_pv method substracts one step as is needed usually for the dynamic part
+    pv = calculate_pv(guaranteed_benefit_nominal, guaranteed_interest_monthly, regular_charges, T + 1)
+    Account["traditional_part"].append(pv)
+    Account["fund_part"].append(savings_premium - pv)
+
+    for t in range(1, T + 1):
+
+        traditional_part_new = (Account["traditional_part"][t - 1] - regular_charges) * real_interest_monthly
+        fund_part_new = Account["fund_part"][t - 1] * fund[t - 1]
+        new_total = traditional_part_new + fund_part_new
+
+        Account["t"].append(t)
+        Account["traditional_part"].append(traditional_part_new)
+        Account["fund_part"].append(fund_part_new)
+        Account["total"].append(new_total)
+
+    Account["benefit_at_maturity"] = Account["total"][-1]
+
+    irr = calculate_irr(Account["total"][-1], single_premium, maturity)
+    Account["irr"] = irr
+
+    return Account
+    
 
 
 def pure_fund_single_premium(premium, fund, regular_charges, alpha, beta, gamma, maturity):

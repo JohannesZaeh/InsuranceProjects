@@ -1,14 +1,17 @@
 import sys
 import os
 import numpy as np
+
 from utils import read_input
 from utils import write_output
 from utils import load_fund
 from utils import threeD_plot
 from utils import twoD_plot
-from functions import run_hybrid
+
 from functions import pure_fund_single_premium
 from functions import pure_fund_regular_premium
+from functions import static_hybrid_single_premium
+from functions import dynamic_hybrid_single_premium
 
 directory = sys.argv[1].replace("\\", "/")
 directory = directory[:-1]
@@ -30,20 +33,18 @@ months = ["01","02","03","04","05","06","07","08","09","10","11","12"]
 result = []
 start_dates = []
 
-print(start_years[-1])
+fund_id = fund
+
 
 for i,year in enumerate(start_years):
     for m,month in enumerate(months):
-
-
-        print(f"{year},{month}")
 
         start_date = month + "/01/" + year
         start_dates.append(int(year) + m/12)
 
         # check if it should load a specific fund from /resources, otherwise turn constant fund into list.
         if fund_constant == False:
-            path_fund = directory + "/resources/" + fund + ".txt"
+            path_fund = directory + "/resources/" + fund_id + ".txt"
             fund = load_fund(path_fund, start_date, int(maturity))
         else:
             fund = int(maturity) * [(1 + constant_increment) ** (1 / 12)]
@@ -54,9 +55,11 @@ for i,year in enumerate(start_years):
             case "pure_fund_regular_premium":
                 life_table_path = directory + "/resources/" + life_table + ".txt"
                 account = pure_fund_regular_premium(premium, fund, regular_charges, alpha, beta, gamma, maturity, age, life_table_path)                                  
-                                                    
-        #account = run_hybrid(single_premium, guaranteed_benefit, worst_case, guaranteed_interest, real_interest,
-        #                     fund, regular_charges, alpha, beta, maturity, contract_type)
+            case "static_hybrid_single_premium":
+                account = static_hybrid_single_premium(premium, guaranteed_benefit, worst_case, guaranteed_interest, real_interest, fund, regular_charges, alpha, beta, maturity)
+            case "dynamic_hybrid_single_premium":
+                account = dynamic_hybrid_single_premium(premium, guaranteed_benefit, worst_case, guaranteed_interest, real_interest, fund, regular_charges, alpha, beta, maturity)
+    
         result.append(account)
 
 x = np.array(result[0]["t"])
@@ -78,8 +81,6 @@ print(min(irrs))
 print(max(irrs))
 twoD_plot(y,irrs)
 '''
-
-
 
 twoD_plot(y,benefits)
 
